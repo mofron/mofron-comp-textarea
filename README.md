@@ -1,2 +1,2 @@
-# mofron-parts-textarea
-textarea component for mofron
+# mofron-comp-textarea
+TextArea component for mofron
