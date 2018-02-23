@@ -2,21 +2,22 @@
  * @file mofrom-comp-textarea/index.js
  * @author simpart
  */
-require("mofron-comp-form");
-require("mofron-comp-text");
+let mf = require('mofron');
+let Form = require("mofron-comp-form");
+let Text = require("mofron-comp-text");
 
 /**
  * @class TextArea
  * @brief textarea component for mofron
  */
-mofron.comp.TextArea = class extends mofron.comp.Form {
+mofron.comp.TextArea = class extends Form {
     /**
      * initialize button component
      *
      * @param prm_opt (string) default text value
      * @param prm_opt (object) option object of key-value
      */
-    constructor (prm_opt) {
+    constructor (po) {
         try {
             super();
             this.name('TextArea');
@@ -24,7 +25,16 @@ mofron.comp.TextArea = class extends mofron.comp.Form {
             this.m_text   = null;
             this.m_maxlen = null;
             
-            this.prmOpt(prm_opt);
+            this.prmOpt(po);
+        } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    addChild (chd, idx) {
+        try {
+            super.addChild(chd, idx, false);
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -33,23 +43,21 @@ mofron.comp.TextArea = class extends mofron.comp.Form {
     
     initDomConts (prm) {
         try {
-            /* init tag */
-            var txtarea = new mofron.Dom('textarea');
-            this.vdom().addChild(txtarea);
+            //super.initDomConts();
+            this.adom().addChild(new mf.Dom('div', this));
+            
+            if (null !== prm) {
+                this.label(prm);
+            }
+            this.addChild(this.label());
+            
+            let txtarea = new mofron.Dom('textarea');
+            this.target().addChild(txtarea);
             this.target(txtarea);
             
             /* set default text */
-            if (null !== prm) {
-                if ('string' !== typeof prm) {
-                    throw new Error('invalid parameter');
-                }
+            if (undefined !== prm) {
                 this.text(prm);
-                this.addChild(new mofron.comp.Text(prm));
-            }
-            
-            /* set max length */
-            if (null !== this.maxLength()) {
-                txtarea.attr('maxlength', '' + this.maxLength());
             }
             
             /* set default size */
@@ -61,34 +69,36 @@ mofron.comp.TextArea = class extends mofron.comp.Form {
         }
     }
     
-    width (val) {
+    label (val) {
         try {
             if (undefined === val) {
                 /* getter */
-                return mofron.func.getLength(this.style('width'));
+                if (undefined === this.m_label) {
+                    this.label('');
+                }
+                return this.m_label;
             }
             /* setter */
-            if ('number' !== (typeof val)) {
+            if ( !( ('string' === typeof val) ||
+                    (true     === mofron.func.isInclude(val, 'Text')) ) ) {
                 throw new Error('invalid parameter');
             }
-            this.style('width', val + 'px');
-        } catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
-    }
-    
-    height (val) {
-        try {
-            if (undefined === val) {
-                /* getter */
-                return mofron.func.getLength(this.style('height'));
+            
+            if ('string' === typeof val) {
+                if (undefined === this.m_label) {
+                    this.m_label = new Text(val);
+                } else {
+                    this.m_label.text(val);
+                }
+            } else {
+                if (0 !== this.child().length) {
+                    this.target(this.adom().child()[0].child()[0]);
+                    this.updChild(0, val);
+                    this.target(this.adom().child()[0].child()[1]);
+                    this.adom().child()[0].child()[0].child().pop()
+                }
+                this.m_label = val;
             }
-            /* setter */
-            if ('number' != (typeof val)) {
-                throw new Error('invalid parameter');
-            }
-            this.style('height', val + 'px');
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -167,5 +177,4 @@ mofron.comp.TextArea = class extends mofron.comp.Form {
         }
     }
 }
-mofron.comp.textarea = {};
 module.exports = mofron.comp.TextArea;
