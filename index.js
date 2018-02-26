@@ -105,24 +105,56 @@ mofron.comp.TextArea = class extends Form {
         }
     }
     
+    //text (val) {
+    //    try {
+    //        if (undefined === val) {
+    //            /* getter */
+    //            if (true === this.isRendered()) {
+    //                return document.querySelector('#' + this.target().getId()).value;
+    //            } else {
+    //                return this.m_text;
+    //            }
+    //        }
+    //        /* setter */
+    //        if ('string' !== typeof val) {
+    //            throw new Error('invalid parameter');
+    //        }
+    //        this.m_text = val;
+    //        if (true === this.isRendered()) {
+    //            document.querySelector('#' + this.target().getId()).value = val;
+    //        }
+    //    } catch (e) {
+    //        console.error(e.stack);
+    //        throw e;
+    //    }
+    //}
+    
     text (val) {
         try {
             if (undefined === val) {
                 /* getter */
-                if (true === this.isRendered()) {
-                    return document.querySelector('#' + this.target().getId()).value;
-                } else {
-                    return this.m_text;
-                }
+                return this.target().prop('value');
             }
             /* setter */
             if ('string' !== typeof val) {
                 throw new Error('invalid parameter');
             }
-            this.m_text = val;
-            if (true === this.isRendered()) {
-                document.querySelector('#' + this.target().getId()).value = val;
+            this.target().prop({value : val});
+            this.target().attr({value : val});
+        } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    value (val) {
+        try {
+            if (undefined === val) {
+                /* getter */
+                return this.text();
             }
+            /* setter */
+            this.text(val);
         } catch (e) {
             console.error(e.stack);
             throw e;
