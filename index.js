@@ -39,6 +39,34 @@ mofron.comp.TextArea = class extends FormItem {
             
             /* set default size */
             this.size(400, 200);
+            
+        } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    /**
+     * set change event
+     *
+     * 
+     */
+    afterRender () {
+        try {
+            let chg_evt = this.changeEvent();
+            let txt_ara = this;
+            this.target().getRawDom().onkeyup = () => {
+                try {
+                    if (null !== chg_evt) {
+                        for (let idx in chg_evt) {
+                            chg_evt[idx][0](txt_ara, chg_evt[idx][1]);
+                        }
+                    }
+                } catch (e) {
+                    console.error(e.stack);
+                    throw e;
+                }
+            }
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -57,6 +85,14 @@ mofron.comp.TextArea = class extends FormItem {
             }
             this.target().prop({value : val});
             this.target().attr({value : val});
+            
+            /* execute change event */
+            let chg_evt = this.changeEvent();
+            if (null !== chg_evt) {
+                for (let idx in chg_evt) {
+                    chg_evt[idx][0](txt_ara, chg_evt[idx][1]);
+                }
+            }
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -104,6 +140,26 @@ mofron.comp.TextArea = class extends FormItem {
                 throw new Error('invalid parameter');
             }
             this.target().attr({maxlength : len});
+        } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    color (prm) {
+        try {
+            let ret = super.color(prm);
+            if (undefined === ret) {
+                /* setter */
+                let rgb = prm.rgba();
+                rgb[0] = (0 > (rgb[0]-30)) ? 0 : rgb[0]-30;
+                rgb[1] = (0 > (rgb[1]-30)) ? 0 : rgb[1]-30;
+                rgb[2] = (0 > (rgb[2]-30)) ? 0 : rgb[2]-30;
+                this.style({
+                    'border-color' : new mf.Color(rgb[0], rgb[1], rgb[2]).getStyle()
+                });
+            }
+            return ret;
         } catch (e) {
             console.error(e.stack);
             throw e;
