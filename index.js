@@ -80,35 +80,40 @@ mofron.comp.TextArea = class extends FormItem {
                 return this.target().prop('value');
             }
             /* setter */
-            if ('string' !== typeof val) {
+            if ( ('string' !== typeof val) &&
+                 (true !== mf.func.isInclude(val, 'Text'))) {
                 throw new Error('invalid parameter');
             }
-            this.target().prop({value : val});
-            this.target().attr({value : val});
+            
+            /* set contents */
+            this.target().prop({
+                value : ('string' === typeof val)? val : val.text()
+            });
+            this.target().attr({
+                value : ('string' === typeof val)? val : val.text()
+            });
+            
+            /* set text config */
+            if (true === mf.func.isInclude(val, 'Text')) {
+                /* set text style */
+                let size = val.size();
+                this.style({
+                    'font-size' : ('number' === typeof size)? size + 'px' : size,
+                });
+                if (null !== val.color()) {
+                    this.style({
+                        'color' : val.color().getStyle()
+                    });
+                }
+            }
             
             /* execute change event */
             let chg_evt = this.changeEvent();
             if (null !== chg_evt) {
                 for (let idx in chg_evt) {
-                    chg_evt[idx][0](txt_ara, chg_evt[idx][1]);
+                    chg_evt[idx][0](this, chg_evt[idx][1]);
                 }
             }
-        } catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
-    }
-    
-    textSize (prm) {
-        try {
-            if (undefined === prm) {
-                /* getter */
-                return mf.func.getLength(this.style('font-size'));
-            }
-            /* setter */
-            this.style({
-                'font-size' : ('number' === typeof prm) ? prm + 'px' : prm
-            });
         } catch (e) {
             console.error(e.stack);
             throw e;
