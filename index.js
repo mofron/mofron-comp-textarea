@@ -33,7 +33,14 @@ mofron.comp.TextArea = class extends FormItem {
             super.initDomConts(prm);
              
             /* init textarea dom contents */
-            let txt_ara = new mofron.Dom('textarea');
+            let txt_ara = new mofron.Dom({
+                tag       : 'textarea',
+                component :  this,
+                style     : {
+                    'border-color' : new mf.Color(200,200,200).getStyle(),
+                    'font-size'    : '15px'
+                }
+            });
             this.target().addChild(txt_ara);
             this.target(txt_ara);
             
