@@ -17,20 +17,20 @@ mofron.comp.TextArea = class extends FormItem {
      * @param po (string) label contents
      * @param po (object) option
      */
-    constructor (po) {
+    constructor (po, p2) {
         try {
             super();
             this.name('TextArea');
-            this.prmOpt(po);
+            this.prmOpt(po, p2);
         } catch (e) {
             console.error(e.stack);
             throw e;
         }
     }
     
-    initDomConts (prm) {
+    initDomConts (lbl, val) {
         try {
-            super.initDomConts(prm);
+            super.initDomConts(lbl);
              
             /* init textarea dom contents */
             let txt_ara = new mofron.Dom({
@@ -44,9 +44,9 @@ mofron.comp.TextArea = class extends FormItem {
             this.target().addChild(txt_ara);
             this.target(txt_ara);
             
-            /* set default size */
+            /* set default */
             this.size(400, 200);
-            
+            this.value(val);
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -172,6 +172,15 @@ mofron.comp.TextArea = class extends FormItem {
                 });
             }
             return ret;
+        } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    clear () {
+        try {
+            this.text('');
         } catch (e) {
             console.error(e.stack);
             throw e;
