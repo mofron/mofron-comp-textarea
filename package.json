@@ -1,6 +1,6 @@
 {
   "name": "mofron-comp-textarea",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "TextArea Component for mofron",
   "main": "index.js",
   "scripts": {
@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/simpart/mofron-comp-textarea.git"
+    "url": "git+https://github.com/mofron/mofron-comp-textarea.git"
   },
   "keywords": [
-    "mofron"
+    "front-end","mofron"
   ],
   "author": "simparts",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/simpart/mofron-comp-textarea/issues"
+    "url": "https://github.com/mofron/mofron-comp-textarea/issues"
   },
-  "homepage": "https://github.com/simpart/mofron-comp-textarea#readme"
+  "homepage": "https://github.com/mofron/mofron-comp-textarea#readme"
 }

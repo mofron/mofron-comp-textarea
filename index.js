@@ -1,52 +1,35 @@
 /**
  * @file mofrom-comp-textarea/index.js
- * @author simpart
- */
-let mf = require('mofron');
-let FormItem = require("mofron-comp-formitem");
-let Text     = require("mofron-comp-text");
-
-/**
- * @class TextArea
  * @brief textarea component for mofron
+ * @license MIT
  */
-mofron.comp.TextArea = class extends FormItem {
+const FormItem = require("mofron-comp-formitem");
+const Text     = require("mofron-comp-text");
+const Font     = require("mofron-effect-font");
+const cmputl = mofron.util.component;
+const comutl = mofron.util.common;
+
+module.exports = class extends FormItem {
     /**
-     * initialize button component
+     * initialize textarea component
      *
-     * @param po (string) label contents
-     * @param po (object) option
+     * @param (mixed) 'text' parameter
+     *                key-value: component config
+     * @short text
+     * @type private
      */
-    constructor (po, p2) {
+    constructor (prm) {
         try {
             super();
             this.name('TextArea');
-            this.prmOpt(po, p2);
-        } catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
-    }
-    
-    initDomConts (lbl, val) {
-        try {
-            super.initDomConts(lbl);
-             
-            /* init textarea dom contents */
-            let txt_ara = new mofron.Dom({
-                tag       : 'textarea',
-                component :  this,
-                style     : {
-                    'border-color' : new mf.Color(200,200,200).getStyle(),
-                    'font-size'    : '15px'
-                }
-            });
-            this.target().addChild(txt_ara);
-            this.target(txt_ara);
-            
-            /* set default */
-            this.size(400, 200);
-            this.value(val);
+	    this.shortForm('text');
+	    /* init config */
+	    this.confmng().add("txtbuf", { type: "string" });
+	    this.confmng().add("sizeOffset",  { type: "size", init: "0.06rem" });
+	    /* set config */
+	    if (undefined !== prm) {
+                this.config(prm);
+	    }
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -54,72 +37,71 @@ mofron.comp.TextArea = class extends FormItem {
     }
     
     /**
-     * set change event
-     *
+     * initialize dom contents
      * 
+     * @type private
      */
-    afterRender () {
+    initDomConts () {
         try {
-            let chg_evt = this.changeEvent();
-            let txt_ara = this;
-            this.target().getRawDom().onkeyup = () => {
+            super.initDomConts();
+             
+            /* init textarea dom contents */
+            let txt_ara = new mofron.class.Dom({
+                tag: 'textarea', component: this,
+                style: { 'font-size' : '15px' }
+            });
+            this.childDom().child(txt_ara);
+            this.childDom(txt_ara);
+
+            this.focusEvent((p1,p2) => {
                 try {
-                    if (null !== chg_evt) {
-                        for (let idx in chg_evt) {
-                            chg_evt[idx][0](txt_ara, chg_evt[idx][1]);
+                    let txt = p1.text();
+                    if (true === p2) {
+                        this.confmng("txtbuf", (null === txt) ? "" : txt);
+                    } else if (txt !== this.confmng("txtbuf")) {
+                        let cevt = p1.changeEvent();
+                        for (let cidx in cevt) {
+                            cevt[cidx].exec(p1,txt);
                         }
                     }
                 } catch (e) {
                     console.error(e.stack);
                     throw e;
                 }
-            }
+            });
+            
+	    this.effect(new Font({ tag: "TextArea", suspend: true }));
+
+            /* set default */
+            this.size("4rem", "2rem");
         } catch (e) {
             console.error(e.stack);
             throw e;
         }
     }
     
-    text (val) {
+    /**
+     * textarea contents setter/getter
+     * 
+     * @param (string) textarea contents
+     *                 undefined: call as getter
+     * @return (string) textarea contents
+     * @type parameter
+     */
+    text (prm) {
         try {
-            if (undefined === val) {
+            if (undefined === prm) {
                 /* getter */
-                return this.target().prop('value');
-            }
+		return this.childDom().props("value");
+	    }
             /* setter */
-            if ( ('string' !== typeof val) &&
-                 (true !== mf.func.isInclude(val, 'Text'))) {
+            if ('string' !== typeof prm) {
                 throw new Error('invalid parameter');
-            }
-            
-            /* set contents */
-            this.target().prop({
-                value : ('string' === typeof val)? val : val.text()
-            });
-            this.target().attr({
-                value : ('string' === typeof val)? val : val.text()
-            });
-            
-            /* set text config */
-            if (true === mf.func.isInclude(val, 'Text')) {
-                /* set text style */
-                let size = val.size();
-                this.style({
-                    'font-size' : ('number' === typeof size)? size + 'px' : size,
-                });
-                if (null !== val.color()) {
-                    this.style({
-                        'color' : val.color().getStyle()
-                    });
-                }
-            }
-            
-            /* execute change event */
+	    }
+            this.childDom().props({ value: prm });
             let chg_evt = this.changeEvent();
-            if (null !== chg_evt) {
-                for (let idx in chg_evt) {
-                    chg_evt[idx][0](this, chg_evt[idx][1]);
-                }
+            for (let cidx in chg_evt) {
+                chg_evt[cidx].exec(this, prm);
             }
         } catch (e) {
             console.error(e.stack);
@@ -127,57 +109,97 @@ mofron.comp.TextArea = class extends FormItem {
         }
     }
     
-    value (val) {
+    /**
+     * set font family
+     *
+     * @param (string) primary font name
+     *                 undefined: call as getter
+     * @param (string) secondary font name
+     * @return (array) font name [primary, secondary]
+     * @type parameter
+     */
+    font (p1, p2) {
         try {
-            if (undefined === val) {
+            let font = this.effect({ name: "Font", tag: "Input" });
+            if (undefined === p1) {
                 /* getter */
-                return this.text();
+                return font.fname();
             }
             /* setter */
-            this.text(val);
+            font.suspend(false);
+            font.fname(p1,p2);
+        } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+
+    /**
+     * textarea contents setter/getter
+     * 
+     * @param (string) the same as 'text'
+     * @return (string) the same as 'text'
+     * @type parameter
+     */
+    value (prm) {
+        try {
+	    return this.text(prm);
         } catch (e) {
             console.error(e.stack);
             throw e;
         }
     }
     
-    maxLength (len) {
+    /**
+     * maximum input text length setter/getter
+     *
+     * @param (number) maximal length
+     *                 undefined: call as getter
+     * @return (mixed) number: maxmal length
+     *                 null: not set
+     * @type parameter
+     */
+    maxlength (prm) {
         try {
-            if (undefined === len) {
+            if (undefined === prm) {
                 /* getter */
-                return this.target().attr('maxlength');
+                return this.childDom().attrs('maxlength');
             }
             /* setter */
-            if ('number' !== typeof len) {
+            if ('number' !== typeof prm) {
                 throw new Error('invalid parameter');
             }
-            this.target().attr({maxlength : len});
+            this.childDom().attrs({ maxlength : prm });
         } catch (e) {
             console.error(e.stack);
             throw e;
         }
     }
     
-    color (prm) {
+    /**
+     * border color setter/getter
+     *
+     * @param (mixed (color)) string: border color name, #hex
+     *                        array: [red, green, blue, (alpha)]
+     *                        undefined: call as getter
+     * @param (key-value) style option
+     * @return (string) color
+     * @type parameter
+     */
+    mainColor (prm,opt) {
         try {
-            let ret = super.color(prm);
-            if (undefined === ret) {
-                /* setter */
-                let rgb = prm.rgba();
-                rgb[0] = (0 > (rgb[0]-30)) ? 0 : rgb[0]-30;
-                rgb[1] = (0 > (rgb[1]-30)) ? 0 : rgb[1]-30;
-                rgb[2] = (0 > (rgb[2]-30)) ? 0 : rgb[2]-30;
-                this.style({
-                    'border-color' : new mf.Color(rgb[0], rgb[1], rgb[2]).getStyle()
-                });
-            }
-            return ret;
+            return cmputl.color('border-color', prm, opt);
         } catch (e) {
             console.error(e.stack);
             throw e;
         }
     }
-    
+
+    /**
+     * clear text contents
+     * 
+     * @type function
+     */
     clear () {
         try {
             this.text('');
@@ -186,6 +208,118 @@ mofron.comp.TextArea = class extends FormItem {
             throw e;
         }
     }
+
+    /**
+     * focus status setter/getter
+     *
+     * @param (boolean) true: focus input
+     *                  false: defocus input
+     *                  undefined: call as getter
+     * @return (boolean) focus status
+     * @type parameter
+     */
+    focus (prm) {
+        try {
+            let ret = super.focus(prm);
+            if ((true === prm) && (true === this.childDom().isPushed())) {
+                /* setter */
+                this.childDom().getRawDom().select();
+            }
+            return ret;
+        } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+
+     /**
+     * input height setter/getter
+     * 
+     * @param (string (size)) input height
+     *                        undefined: call as getter
+     * @param (key-value) style option
+     * @return (mixed) string: input height
+     *                 null: not set
+     * @type parameter
+     */
+    height (prm, opt) {
+        try {
+            if (undefined === prm) {
+                /* getter */
+                return comutl.sizesum(prm, this.sizeOffset());
+            }
+            /* setter */
+            let set_siz = comutl.sizediff(prm, this.sizeOffset())
+            super.height(set_siz, opt);
+            this.style({ "font-size" : set_siz });
+        } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+
+    /**
+     * input width setter/getter
+     *
+     * @param (string (size)) input width
+     *                        undefined: call as getter
+     * @param (key-value) style option
+     * @return (mixed) string: input width
+     *                 null: not set
+     * @type parameter
+     */
+    width (prm, opt) {
+        try {
+            if (undefined === prm) {
+                /* getter */
+                return comutl.sizesum(prm, this.sizeOffset());
+            }
+            /* setter */
+            super.width(
+                comutl.sizediff(prm, this.sizeOffset()),
+                opt
+            );
+        } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+
+    /**
+     * size weight value setter/getter
+     * use for size calculate
+     * 
+     * @param (string (size)) size weight
+     *                        undefined: call as getter
+     * @param (string (size)) size object for weight
+     * @type private
+     */
+    sizeOffset (prm) {
+        try {
+            return this.confmng("sizeOffset",  prm);
+        } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    /**
+     * textarea font-size setter/getter
+     * 
+     * @param (string(size)) textarea font-size
+     *                       undefined: call as getter
+     * @return (mixed) string(size): textarea font-size
+     *                 null: not set
+     */
+    fontSize (prm) {
+        try {
+            return this.style(
+                (undefined === prm) ? "font-size" : { "font-size" : prm }
+	    )
+	} catch (e) {
+            console.error(e.stack);
+            throw e;
+	}
+    }
 }
-module.exports = mofron.comp.TextArea;
 /* end of file */

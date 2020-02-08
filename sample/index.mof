@@ -1,0 +1,9 @@
+<require>
+    <tag load="mofron-comp-textarea">TextArea</tag>
+</require>
+
+<script run=init>
+let chg_evt = (p1,p2,p3) => { console.log(p2); }
+</script>
+
+<TextArea change-event=@chg_evt></TextArea>
