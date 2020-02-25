@@ -251,7 +251,6 @@ module.exports = class extends FormItem {
             /* setter */
             let set_siz = comutl.sizediff(prm, this.sizeOffset())
             super.height(set_siz, opt);
-            this.style({ "font-size" : set_siz });
         } catch (e) {
             console.error(e.stack);
             throw e;
