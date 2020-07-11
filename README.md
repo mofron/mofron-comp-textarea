@@ -11,9 +11,9 @@ npm install mofron mofrom-comp-textarea
 
 # Sample
 ```html
-<require>
+<setting>
     <tag load="mofron-comp-textarea">TextArea</tag>
-</require>
+</setting>
 
 <script run=init>
 let chg_evt = (p1,p2,p3) => { console.log(p2); }
@@ -38,8 +38,7 @@ let chg_evt = (p1,p2,p3) => { console.log(p2); }
 | | | | array: [red, green, blue, (alpha)] |
 | | | | undefined: call as getter |
 | | | key-value | style option |
-| | clear | ||
-| | focus | boolean | true: focus input |
+| | clear | ||| | focus | boolean | true: focus input |
 | | | | false: defocus input |
 | | | | undefined: call as getter |
 | | height | string (size) | input height |

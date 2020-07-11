@@ -120,7 +120,7 @@ module.exports = class extends FormItem {
      */
     font (p1, p2) {
         try {
-            let font = this.effect({ name: "Font", tag: "Input" });
+            let font = this.effect({ name: "Font", tag: "TextArea" });
             if (undefined === p1) {
                 /* getter */
                 return font.fname();
@@ -188,11 +188,20 @@ module.exports = class extends FormItem {
      */
     mainColor (prm,opt) {
         try {
-            return cmputl.color('border-color', prm, opt);
+            return cmputl.color(this,'border-color', prm, opt);
         } catch (e) {
             console.error(e.stack);
             throw e;
         }
+    }
+
+    accentColor (prm,opt) {
+        try {
+            return this.mainColor(prm,opt);
+	} catch (e) {
+            console.error(e.stack);
+            throw e;
+	}
     }
 
     /**
@@ -246,11 +255,21 @@ module.exports = class extends FormItem {
         try {
             if (undefined === prm) {
                 /* getter */
-                return comutl.sizesum(prm, this.sizeOffset());
+		try {
+                    return comutl.sizesum(super.height(), this.sizeOffset());
+		} catch (e) {
+                    return super.height();
+		}
             }
             /* setter */
-            let set_siz = comutl.sizediff(prm, this.sizeOffset())
-            super.height(set_siz, opt);
+            try {
+                let wid = comutl.sizediff(prm, this.sizeOffset());
+                this.rootDom()[0].style({ "height" : wid });
+                super.height(wid);
+            } catch (e) {
+                this.rootDom()[0].style({ "height" : prm });
+                super.height(prm);
+            }
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -269,15 +288,24 @@ module.exports = class extends FormItem {
      */
     width (prm, opt) {
         try {
+	    let siz = null;
             if (undefined === prm) {
                 /* getter */
-                return comutl.sizesum(prm, this.sizeOffset());
+		try {
+                    return comutl.sizesum(super.width(), this.sizeOffset());
+		} catch (e) {
+                    return super.width();
+		}
             }
             /* setter */
-            super.width(
-                comutl.sizediff(prm, this.sizeOffset()),
-                opt
-            );
+            try {
+		let wid = comutl.sizediff(prm, this.sizeOffset());
+	        this.rootDom()[0].style({ "width" : wid });
+	        super.width(wid);
+	    } catch (e) {
+	        this.rootDom()[0].style({ "width" : prm });
+                super.width(prm);
+	    }
         } catch (e) {
             console.error(e.stack);
             throw e;
