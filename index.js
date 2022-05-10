@@ -70,7 +70,7 @@ module.exports = class extends FormItem {
                 }
             });
             
-	    this.effect(new Font({ tag: "TextArea", suspend: true }));
+	    //this.effect(new Font({ tag: "TextArea", suspend: true }));
 
             /* set default */
             this.size("4rem", "2rem");
@@ -120,14 +120,15 @@ module.exports = class extends FormItem {
      */
     font (p1, p2) {
         try {
-            let font = this.effect({ name: "Font", tag: "TextArea" });
-            if (undefined === p1) {
-                /* getter */
-                return font.fname();
-            }
-            /* setter */
-            font.suspend(false);
-            font.fname(p1,p2);
+	    this.style({ "font-family" : p1 });
+            //let font = this.effect({ modname: "Font", tag: "TextArea" });
+            //if (undefined === p1) {
+            //    /* getter */
+            //    return font.fname();
+            //}
+            ///* setter */
+            //font.suspend(false);
+            //font.fname(p1,p2);
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -218,6 +219,15 @@ module.exports = class extends FormItem {
         }
     }
 
+    select () {
+        try {
+            this.childDom().getRawDom().select();
+	} catch (e) {
+            console.error(e.stack);
+            throw e;
+	}
+    }
+
     /**
      * focus status setter/getter
      *
@@ -235,41 +245,6 @@ module.exports = class extends FormItem {
                 this.childDom().getRawDom().select();
             }
             return ret;
-        } catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
-    }
-
-     /**
-     * input height setter/getter
-     * 
-     * @param (string (size)) input height
-     *                        undefined: call as getter
-     * @param (key-value) style option
-     * @return (mixed) string: input height
-     *                 null: not set
-     * @type parameter
-     */
-    height (prm, opt) {
-        try {
-            if (undefined === prm) {
-                /* getter */
-		try {
-                    return comutl.sizesum(super.height(), this.sizeOffset());
-		} catch (e) {
-                    return super.height();
-		}
-            }
-            /* setter */
-            try {
-                let wid = comutl.sizediff(prm, this.sizeOffset());
-                this.rootDom()[0].style({ "height" : wid });
-                super.height(wid);
-            } catch (e) {
-                this.rootDom()[0].style({ "height" : prm });
-                super.height(prm);
-            }
         } catch (e) {
             console.error(e.stack);
             throw e;
