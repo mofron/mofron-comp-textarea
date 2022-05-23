@@ -228,6 +228,16 @@ module.exports = class extends FormItem {
 	}
     }
 
+    copy () {
+        try {
+            this.select();
+            document.execCommand('copy');
+        } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+
     /**
      * focus status setter/getter
      *
