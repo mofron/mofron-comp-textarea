@@ -21,7 +21,7 @@ module.exports = class extends FormItem {
     constructor (prm) {
         try {
             super();
-            this.name('TextArea');
+            this.modname('TextArea');
 	    this.shortForm('text');
 	    /* init config */
 	    this.confmng().add("txtbuf", { type: "string" });
